@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private Rigidbody _rigidbody;
+    private Rigidbody2D _rigidbody;
 
     private float _gravity = 1.7f;
     private float _boostSpeed = 3f;
@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
-        this._rigidbody = this.GetComponent<Rigidbody>();
+        this._rigidbody = this.GetComponent<Rigidbody2D>();
     }
 
     private void Update()
@@ -24,8 +24,9 @@ public class PlayerController : MonoBehaviour
         float horizontalVelocity = Input.GetAxis("Horizontal") * this._walkSpeed;
         float verticalVelocity = this._isBoosting ? this._boostSpeed : (this._isGrounded ? -.1f : -this._gravity);
 
-        this._rigidbody.linearVelocity = new Vector3(horizontalVelocity, verticalVelocity, 0f);
-        this._isGrounded = Physics.Raycast(this.transform.position, Vector3.down, .6f);
+        this._rigidbody.linearVelocity = new Vector2(horizontalVelocity, verticalVelocity);
+        RaycastHit2D hit = Physics2D.Raycast(this.transform.position, Vector2.down, .6f, 1 << 31);
+        this._isGrounded = hit.collider;
     }
 
     private void OnDrawGizmos()
