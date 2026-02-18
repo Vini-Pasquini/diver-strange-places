@@ -3,6 +3,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D _rigidbody;
+    private SpriteRenderer _spriteRenderer;
 
     private float _gravity = 1.7f;
     private float _boostSpeed = 3f;
@@ -14,6 +15,7 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         this._rigidbody = this.GetComponent<Rigidbody2D>();
+        this._spriteRenderer = this.GetComponentInChildren<SpriteRenderer>();
     }
 
     private void Update()
@@ -27,6 +29,9 @@ public class PlayerController : MonoBehaviour
         this._rigidbody.linearVelocity = new Vector2(horizontalVelocity, verticalVelocity);
         RaycastHit2D hit = Physics2D.Raycast(this.transform.position, Vector2.down, .6f, 1 << 31);
         this._isGrounded = hit.collider;
+
+        // Anim Update
+        this._spriteRenderer.flipX = horizontalVelocity == 0 ? this._spriteRenderer.flipX : horizontalVelocity < 0;
     }
 
     private void OnDrawGizmos()
