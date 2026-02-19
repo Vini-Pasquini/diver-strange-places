@@ -1,42 +1,106 @@
 using UnityEngine;
 
+public enum PlayerAnimation
+{
+    Idle,
+    Walk,
+    StartBoost,
+    Boosting,
+    StopBoost,
+    Falling,
+}
+
 public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D _rigidbody;
     private SpriteRenderer _spriteRenderer;
+    private Animator _animator;
 
     private float _gravity = 1.7f;
-    private float _boostSpeed = 3f;
-    private float _walkSpeed = 1.5f;
+    private float _boostSpeed = 2f;
+    private float _walkSpeed = 1f;
 
     private bool _isGrounded;
     private bool _isBoosting;
+    private bool _skipStopBoostAnim;
+
+    private bool _flipAnimDir;
+
+    private float _horizontalVelocity;
+    private float _verticalVelocity;
+
+    private Timer _boostDamp = new Timer(1f, false);
+    private Timer _fallDamp = new Timer(1f, false);
 
     private void Start()
     {
         this._rigidbody = this.GetComponent<Rigidbody2D>();
         this._spriteRenderer = this.GetComponentInChildren<SpriteRenderer>();
+        this._animator = this.GetComponentInChildren<Animator>();
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.W)) { this._isBoosting = true; }
-        if (Input.GetKeyUp(KeyCode.W)) { this._isBoosting = false; }
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            this._isBoosting = true;
+            this._skipStopBoostAnim = false;
+            this._boostDamp.Start();
+            this.PlayAnim(PlayerAnimation.StartBoost);
+        }
+        if (Input.GetKeyUp(KeyCode.W))
+        {
+            this._isBoosting = false;
+            this._fallDamp.Start();
+            this.PlayAnim(PlayerAnimation.StopBoost);
+        }
 
-        float horizontalVelocity = Input.GetAxis("Horizontal") * this._walkSpeed;
-        float verticalVelocity = this._isBoosting ? this._boostSpeed : (this._isGrounded ? -.1f : -this._gravity);
+        float boostMultiplier = this._boostDamp.Running ? ((this._boostDamp.Delay - this._boostDamp.RemainingSeconds) / this._boostDamp.Delay) : 1f;
+        float fallMultiplier = this._fallDamp.Running ? ((this._fallDamp.Delay - this._fallDamp.RemainingSeconds) / this._fallDamp.Delay) : 1f;
 
-        this._rigidbody.linearVelocity = new Vector2(horizontalVelocity, verticalVelocity);
-        RaycastHit2D hit = Physics2D.Raycast(this.transform.position, Vector2.down, .6f, 1 << 31);
+        this._horizontalVelocity = Input.GetAxis("Horizontal") * this._walkSpeed;
+        this._verticalVelocity = this._isBoosting ? this._boostSpeed * boostMultiplier : (this._isGrounded ? -.1f : -this._gravity * fallMultiplier);
+        
+        this._boostDamp.UpdateTimer();
+        this._fallDamp.UpdateTimer();
+
+        bool isGroundedBuffer = this._isGrounded;
+
+        this._rigidbody.linearVelocity = new Vector2(this._horizontalVelocity, this._verticalVelocity);
+        RaycastHit2D hit = Physics2D.Raycast(this.transform.position, Vector2.down, .55f, 1 << 31);
         this._isGrounded = hit.collider;
 
-        // Anim Update
-        this._spriteRenderer.flipX = horizontalVelocity == 0 ? this._spriteRenderer.flipX : horizontalVelocity < 0;
+        if (isGroundedBuffer != this._isGrounded) { this._fallDamp.Start(); }
+
+        this.UpdateAnimation();
+    }
+
+    private void PlayAnim(PlayerAnimation playerAnimation)
+    {
+        this._animator.Play(playerAnimation.ToString() + (this._flipAnimDir ? "_L" : "_R"));
+    }
+
+    private void UpdateAnimation()
+    {
+        this._flipAnimDir = _horizontalVelocity == 0 ? this._flipAnimDir : this._horizontalVelocity < 0;
+        this._animator.SetBool("FLIP", this._flipAnimDir);
+        
+        if (this._isBoosting) return; // boost anim starts on keydown
+        
+        if (this._isGrounded)
+        {
+            this._skipStopBoostAnim = true;
+            if (this._horizontalVelocity == 0) { this.PlayAnim(PlayerAnimation.Idle); }
+            else { this.PlayAnim(PlayerAnimation.Walk); }
+            return;
+        }
+
+        if (this._skipStopBoostAnim) { this.PlayAnim(PlayerAnimation.Falling); }
     }
 
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(this.transform.position, this.transform.position - (this.transform.up * .6f));
+        Gizmos.DrawLine(this.transform.position, this.transform.position - (this.transform.up * .55f));
     }
 }
