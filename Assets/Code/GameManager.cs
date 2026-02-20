@@ -40,4 +40,15 @@ public class GameManager : PersistentSingleton<GameManager>
         }
         this._hudController.DisableTooltip();
     }
+
+    private PathNode _activePathNode;
+    public PathNode ActivePathNode { get { return this._activePathNode; } }
+    public bool justChangedPath;
+
+    public void RegisterActivePathNode(PathNode activePathNode)
+    {
+        if (activePathNode == this._activePathNode) return;
+        this._activePathNode = activePathNode;
+        this.justChangedPath = true;
+    }
 }

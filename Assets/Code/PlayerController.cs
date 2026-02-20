@@ -97,10 +97,11 @@ public class PlayerController : MonoBehaviour
 
         if (this._skipStopBoostAnim) { this.PlayAnim(PlayerAnimation.Falling); }
     }
-
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawLine(this.transform.position, this.transform.position - (this.transform.up * .55f));
     }
+#endif
 }
