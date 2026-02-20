@@ -11,9 +11,16 @@ public class GameManager : PersistentSingleton<GameManager>
     public bool playerVisible = false;
     public bool insideFishSight = false;
 
+    private HUDController _hudController;
+
     protected override void Awake()
     {
         base.Awake();
+    }
+
+    private void Start()
+    {
+        this._hudController = GameObject.Find("HUDController").GetComponent<HUDController>();
     }
 
     private void Update()
@@ -22,5 +29,15 @@ public class GameManager : PersistentSingleton<GameManager>
         insideFishSightIndicator.color = !insideFishSight ? Color.red : Color.green;
 
         if (playerVisible && insideFishSight) Debug.Log("Dead");
+    }
+
+    public void SetMessageDisplayActive(bool enable, string msg = "")
+    {
+        if (enable)
+        {
+            this._hudController.EnableTooltip(msg);
+            return;
+        }
+        this._hudController.DisableTooltip();
     }
 }
