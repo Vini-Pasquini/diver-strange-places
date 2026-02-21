@@ -1,11 +1,10 @@
 using Unity.VisualScripting;
 using UnityEngine;
 
+public enum EnemyState { Patrol, Chase, Investigate, Kill }
+
 public class EnemyController : MonoBehaviour
 {
-    private enum EnemyState { Patrol, Chase, }
-    private EnemyState _currentState;
-
     [SerializeField] private Transform _fishSprite;
     [SerializeField] private Transform _lookAtFinalRot;
 
@@ -16,12 +15,15 @@ public class EnemyController : MonoBehaviour
     private Vector3[] _waypoints;
     private int _currentWaypointIndex;
 
-    private float _movementSpeed = 2f;
+    private float _patrolSpeed = 2f;
+    private float _chaseSpeed = 4f;
+
+    private Timer _investigationTimer = new(5f, false);
 
     private void Start()
     {
         this._rigidbody2D = this.GetComponent<Rigidbody2D>();
-        this._currentState = EnemyState.Patrol;
+        GameManager.Instance.currentEnemyState = EnemyState.Patrol;
     }
 
     private void Update()
@@ -29,10 +31,12 @@ public class EnemyController : MonoBehaviour
         this._interpolationTime += Time.deltaTime * .1f;
         if (this._interpolationTime >= 1f) this._interpolationTime = 1f;
 
-        switch (this._currentState)
+        switch (GameManager.Instance.currentEnemyState)
         {
             case EnemyState.Patrol: this.PatrolUpdate(); break;
             case EnemyState.Chase: this.ChaseUpdate(); break;
+            case EnemyState.Investigate: this.InvestigateUpdate(); break;
+            case EnemyState.Kill: this.KillUpdate(); break;
         }
 
         this._fishSprite.rotation = Quaternion.Lerp(this._fishSprite.rotation, this._lookAtFinalRot.rotation, this._interpolationTime);
@@ -58,7 +62,7 @@ public class EnemyController : MonoBehaviour
 
         if (this._waypoints == null) return;
 
-        this._rigidbody2D.linearVelocity = (this._waypoints[this._currentWaypointIndex] - this.transform.position).normalized * this._movementSpeed;
+        this._rigidbody2D.linearVelocity = (this._waypoints[this._currentWaypointIndex] - this.transform.position).normalized * this._patrolSpeed;
 
         if ((this._waypoints[this._currentWaypointIndex] - this.transform.position).magnitude <= 0.5f)
         {
@@ -72,7 +76,34 @@ public class EnemyController : MonoBehaviour
 
     private void ChaseUpdate()
     {
+        Vector3 soundOrigin = GameManager.Instance.soundOrigin;
 
+        this._rigidbody2D.linearVelocity = (soundOrigin - this.transform.position).normalized * this._chaseSpeed;
+        
+        if ((soundOrigin - this.transform.position).magnitude <= 0.1f)
+        {
+            this._rigidbody2D.linearVelocity = Vector2.zero;
+            GameManager.Instance.currentEnemyState = EnemyState.Investigate;
+            this._investigationTimer.Start();
+        }
+
+        Vector3 dir = soundOrigin - this.transform.position;
+        Vector3 lookPadding = new Vector3(dir.x / Mathf.Abs(dir.x), 0f, 0f);
+
+        this._lookAtFinalRot.LookAt(soundOrigin + lookPadding);
+    }
+
+    private void InvestigateUpdate()
+    {
+        if (this._investigationTimer.UpdateTimer())
+        {
+            GameManager.Instance.currentEnemyState = EnemyState.Patrol;
+        }
+    }
+
+    private void KillUpdate()
+    {
+        GameManager.Instance.GameOver();
     }
 
     private void OnTriggerEnter2D(Collider2D collision) 

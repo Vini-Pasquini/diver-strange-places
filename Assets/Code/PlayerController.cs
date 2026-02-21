@@ -41,19 +41,18 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.W))
+        if (GameManager.Instance.AirPressure > 0f)
         {
-            this._isBoosting = true;
-            this._skipStopBoostAnim = false;
-            this._boostDamp.Start();
-            this.PlayAnim(PlayerAnimation.StartBoost);
-            GameManager.Instance.BubbleNoise += .1f;
-        }
-        if (Input.GetKeyUp(KeyCode.W))
-        {
-            this._isBoosting = false;
-            this._fallDamp.Start();
-            this.PlayAnim(PlayerAnimation.StopBoost);
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                this._isBoosting = true;
+                this._skipStopBoostAnim = false;
+                this._boostDamp.Start();
+                this.PlayAnim(PlayerAnimation.StartBoost);
+                //GameManager.Instance.BubbleNoise += .1f;
+                GameManager.Instance.AlertFish(this.transform.position);
+            }
+            if (Input.GetKeyUp(KeyCode.W)) { this.StopBoosting(); }
         }
 
         float boostMultiplier = this._boostDamp.Running ? ((this._boostDamp.Delay - this._boostDamp.RemainingSeconds) / this._boostDamp.Delay) : 1f;
@@ -75,8 +74,17 @@ public class PlayerController : MonoBehaviour
 
         this.UpdateAnimation();
 
-        if (GameManager.Instance.fishNearby && this._isBoosting) { GameManager.Instance.BubbleNoise += (Time.deltaTime / 3f) * (this._verticalVelocity / this._boostSpeed); }
-        else { GameManager.Instance.BubbleNoise -= Time.deltaTime / 6f; }
+        if (this._isBoosting)
+        {
+            GameManager.Instance.AirPressure -= Time.deltaTime / 3f;
+            GameManager.Instance.AlertFish(this.transform.position);
+        }
+        else if (this._isGrounded) { GameManager.Instance.AirPressure += Time.deltaTime / 5f; }
+
+        if (this._isBoosting && GameManager.Instance.AirPressure <= 0f) { this.StopBoosting(); }
+
+        //if (GameManager.Instance.fishNearby && this._isBoosting) { GameManager.Instance.BubbleNoise += (Time.deltaTime / 3f) * (this._verticalVelocity / this._boostSpeed); }
+        //else { GameManager.Instance.BubbleNoise -= Time.deltaTime / 6f; }
     }
 
     private void PlayAnim(PlayerAnimation playerAnimation)
@@ -101,6 +109,14 @@ public class PlayerController : MonoBehaviour
 
         if (this._skipStopBoostAnim) { this.PlayAnim(PlayerAnimation.Falling); }
     }
+
+    private void StopBoosting()
+    {
+        this._isBoosting = false;
+        this._fallDamp.Start();
+        this.PlayAnim(PlayerAnimation.StopBoost);
+    }
+
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
