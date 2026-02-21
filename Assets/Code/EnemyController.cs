@@ -1,12 +1,13 @@
 using Unity.VisualScripting;
 using UnityEngine;
 
-public enum EnemyState { Patrol, Chase, Investigate, Kill }
-
 public class EnemyController : MonoBehaviour
 {
     [SerializeField] private Transform _fishSprite;
     [SerializeField] private Transform _lookAtFinalRot;
+
+    private AudioSource _audioSource;
+    private GameObject _player;
 
     private float _interpolationTime = 0f;
 
@@ -20,9 +21,14 @@ public class EnemyController : MonoBehaviour
 
     private Timer _investigationTimer = new(5f, false);
 
+    private float _soundDistance = 8f;
+
     private void Start()
     {
         this._rigidbody2D = this.GetComponent<Rigidbody2D>();
+        this._audioSource = this.GetComponent<AudioSource>();
+        this._player = GameObject.Find("Player");
+
         GameManager.Instance.currentEnemyState = EnemyState.Patrol;
     }
 
@@ -40,6 +46,9 @@ public class EnemyController : MonoBehaviour
         }
 
         this._fishSprite.rotation = Quaternion.Lerp(this._fishSprite.rotation, this._lookAtFinalRot.rotation, this._interpolationTime);
+
+        float distance = (this._player.transform.position - this.transform.position).magnitude;
+        this._audioSource.volume = distance > this._soundDistance ? 0f : (this._soundDistance - distance) / this._soundDistance;
     }
 
     private void PatrolUpdate()

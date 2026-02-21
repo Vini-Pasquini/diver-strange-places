@@ -1,44 +1,16 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-//public enum KilledBy
-//{
-//    None,
-//    Sight,
-//    Sound,
-//}
-
 public class GameManager : PersistentSingleton<GameManager>
 {
-    //private KilledBy _deathMethod = KilledBy.None;
-    //public KilledBy DeathMethod { get { return this._deathMethod; } }
-
     [Header("For Testing Only")]
-    [SerializeField] private RawImage playerVisibleIndicator;
-    [SerializeField] private RawImage nearbyFishIndicator;
-    //[SerializeField] private RawImage bubbleNoiseIndicator;
     [SerializeField] private RawImage airPressureIndicator;
+    private HUDController _hudController;
 
-    [Header("Actual GameManager Stuff")]
+    [Header("Actual GameManager Stuff")] // TODO: remove later
     
-    public bool playerVisible = false;
-    public bool fishNearby = false;
-
-    public EnemyState currentEnemyState;
-
-    //private float _bubbleNoise = 0f;
-    //public float BubbleNoise
-    //{
-    //    get { return this._bubbleNoise; }
-
-    //    set
-    //    {
-    //        if (value >= 1f) { this._bubbleNoise = 1f; return; }
-    //        if (value <= 0f) { this._bubbleNoise = 0f; return; }
-
-    //        this._bubbleNoise = value;
-    //    }
-    //}
+    // Player Stuff
+    private PlayerAudioController _playerAudioController;
 
     private float _airPressure = 1f;
     public float AirPressure
@@ -54,7 +26,15 @@ public class GameManager : PersistentSingleton<GameManager>
         }
     }
 
-    private HUDController _hudController;
+    public bool playerVisible = false;
+    public bool fishNearby = false;
+
+    // Fish AI
+    private PathNode _activePathNode;
+    public PathNode ActivePathNode { get { return this._activePathNode; } }
+    public EnemyState currentEnemyState;
+    public Vector3 soundOrigin = Vector3.zero;
+    public bool justChangedPath;
 
     protected override void Awake()
     {
@@ -64,21 +44,12 @@ public class GameManager : PersistentSingleton<GameManager>
     private void Start()
     {
         this._hudController = GameObject.Find("HUDController").GetComponent<HUDController>();
+        this._playerAudioController = GameObject.Find("Player").transform.GetChild(0).GetComponent<PlayerAudioController>();
     }
 
     private void Update()
     {
-        this.playerVisibleIndicator.color = !this.playerVisible ? Color.red : Color.green;
-        this.nearbyFishIndicator.color = !this.fishNearby ? Color.red : Color.green;
         this.airPressureIndicator.transform.localScale = new Vector3(this._airPressure, 1f, 1f);
-
-        //this.bubbleNoiseIndicator.color = Color.Lerp(Color.green, Color.red, this._bubbleNoise);
-        //this.bubbleNoiseIndicator.transform.localScale = new Vector3(this._bubbleNoise, 1f, 1f);
-
-        //if ((this.playerVisible && this.fishNearby) || this._bubbleNoise >= 1f)
-        //{
-        //    this._deathMethod = this.playerVisible ? KilledBy.Sight : KilledBy.Sound;
-        //}
 
         if ((this.playerVisible && this.fishNearby)) { this.currentEnemyState = EnemyState.Kill; }
     }
@@ -88,23 +59,19 @@ public class GameManager : PersistentSingleton<GameManager>
         if (enable)
         {
             this._hudController.EnableTooltip(msg);
+            this._playerAudioController.PlayMessageSound();
             return;
         }
         this._hudController.DisableTooltip();
     }
 
-    private PathNode _activePathNode;
-    public PathNode ActivePathNode { get { return this._activePathNode; } }
-    public bool justChangedPath;
-
+    // Fish AI
     public void RegisterActivePathNode(PathNode activePathNode)
     {
         if (activePathNode == this._activePathNode) return;
         this._activePathNode = activePathNode;
         this.justChangedPath = true;
     }
-
-    public Vector3 soundOrigin = Vector3.zero;
 
     public void AlertFish(Vector3 targetPosition)
     {

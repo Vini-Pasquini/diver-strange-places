@@ -1,17 +1,9 @@
 using UnityEngine;
 
-public enum PlayerAnimation
-{
-    Idle,
-    Walk,
-    StartBoost,
-    Boosting,
-    StopBoost,
-    Falling,
-}
-
 public class PlayerController : MonoBehaviour
 {
+    //[SerializeField] private AudioSource _stepAudioSource;
+
     private Rigidbody2D _rigidbody;
     private SpriteRenderer _spriteRenderer;
     private Animator _animator;
@@ -49,7 +41,6 @@ public class PlayerController : MonoBehaviour
                 this._skipStopBoostAnim = false;
                 this._boostDamp.Start();
                 this.PlayAnim(PlayerAnimation.StartBoost);
-                //GameManager.Instance.BubbleNoise += .1f;
                 GameManager.Instance.AlertFish(this.transform.position);
             }
             if (Input.GetKeyUp(KeyCode.W)) { this.StopBoosting(); }
@@ -72,7 +63,7 @@ public class PlayerController : MonoBehaviour
 
         if (isGroundedBuffer != this._isGrounded) { this._fallDamp.Start(); }
 
-        this.UpdateAnimation();
+        this.AnimationUpdate();
 
         if (this._isBoosting)
         {
@@ -82,9 +73,6 @@ public class PlayerController : MonoBehaviour
         else if (this._isGrounded) { GameManager.Instance.AirPressure += Time.deltaTime / 5f; }
 
         if (this._isBoosting && GameManager.Instance.AirPressure <= 0f) { this.StopBoosting(); }
-
-        //if (GameManager.Instance.fishNearby && this._isBoosting) { GameManager.Instance.BubbleNoise += (Time.deltaTime / 3f) * (this._verticalVelocity / this._boostSpeed); }
-        //else { GameManager.Instance.BubbleNoise -= Time.deltaTime / 6f; }
     }
 
     private void PlayAnim(PlayerAnimation playerAnimation)
@@ -92,7 +80,7 @@ public class PlayerController : MonoBehaviour
         this._animator.Play(playerAnimation.ToString() + (this._flipAnimDir ? "_L" : "_R"));
     }
 
-    private void UpdateAnimation()
+    private void AnimationUpdate()
     {
         this._flipAnimDir = _horizontalVelocity == 0 ? this._flipAnimDir : this._horizontalVelocity < 0;
         this._animator.SetBool("FLIP", this._flipAnimDir);

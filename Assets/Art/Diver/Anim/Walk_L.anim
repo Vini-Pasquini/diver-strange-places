@@ -23,7 +23,7 @@ AnimationClip:
     - time: 0
       value: {fileID: 21300000, guid: bb208f9ce81d9444cb02e4ebada5c9dc, type: 3}
     - time: 0.083333336
-      value: {fileID: 21300000, guid: df24b4b37e911ac4ba296ee5dfaef34f, type: 3}
+      value: {fileID: 21300000, guid: bb208f9ce81d9444cb02e4ebada5c9dc, type: 3}
     - time: 0.16666667
       value: {fileID: 21300000, guid: 1e203c747163db745b6ac7ce7fa84df3, type: 3}
     - time: 0.25
@@ -39,11 +39,11 @@ AnimationClip:
     - time: 0.6666667
       value: {fileID: 21300000, guid: 6109dc6ab6dea064fbfbe245a1717eb0, type: 3}
     - time: 0.75
-      value: {fileID: 21300000, guid: 373ff070930bde244ba4c5995e17014f, type: 3}
+      value: {fileID: 21300000, guid: bb208f9ce81d9444cb02e4ebada5c9dc, type: 3}
     - time: 0.8333333
-      value: {fileID: 21300000, guid: 30d3ca6d91e71624b8316a7a64831bcf, type: 3}
+      value: {fileID: 21300000, guid: bb208f9ce81d9444cb02e4ebada5c9dc, type: 3}
     - time: 0.9166667
-      value: {fileID: 21300000, guid: bf4e86ce94ae1ab4981ba7d5e6139d78, type: 3}
+      value: {fileID: 21300000, guid: bb208f9ce81d9444cb02e4ebada5c9dc, type: 3}
     - time: 1
       value: {fileID: 21300000, guid: 4b777da5a364ca94b851fc278d7155bd, type: 3}
     - time: 1.0833334
@@ -79,7 +79,7 @@ AnimationClip:
       isSerializeReferenceCurve: 0
     pptrCurveMapping:
     - {fileID: 21300000, guid: bb208f9ce81d9444cb02e4ebada5c9dc, type: 3}
-    - {fileID: 21300000, guid: df24b4b37e911ac4ba296ee5dfaef34f, type: 3}
+    - {fileID: 21300000, guid: bb208f9ce81d9444cb02e4ebada5c9dc, type: 3}
     - {fileID: 21300000, guid: 1e203c747163db745b6ac7ce7fa84df3, type: 3}
     - {fileID: 21300000, guid: 636b213db487ec74bb55215d2c68372a, type: 3}
     - {fileID: 21300000, guid: 1d5bb8ce263021b43ba317371b8fdaf3, type: 3}
@@ -87,9 +87,9 @@ AnimationClip:
     - {fileID: 21300000, guid: 387e579bb00c0d94b99ed11cbec02e92, type: 3}
     - {fileID: 21300000, guid: fecda533403b019409e235dc430da7d5, type: 3}
     - {fileID: 21300000, guid: 6109dc6ab6dea064fbfbe245a1717eb0, type: 3}
-    - {fileID: 21300000, guid: 373ff070930bde244ba4c5995e17014f, type: 3}
-    - {fileID: 21300000, guid: 30d3ca6d91e71624b8316a7a64831bcf, type: 3}
-    - {fileID: 21300000, guid: bf4e86ce94ae1ab4981ba7d5e6139d78, type: 3}
+    - {fileID: 21300000, guid: bb208f9ce81d9444cb02e4ebada5c9dc, type: 3}
+    - {fileID: 21300000, guid: bb208f9ce81d9444cb02e4ebada5c9dc, type: 3}
+    - {fileID: 21300000, guid: bb208f9ce81d9444cb02e4ebada5c9dc, type: 3}
     - {fileID: 21300000, guid: 4b777da5a364ca94b851fc278d7155bd, type: 3}
     - {fileID: 21300000, guid: 56c1f816a1a3f8e46a153cebc0fa2d21, type: 3}
     - {fileID: 21300000, guid: 4b77c72fdebb67f4082b29806e4f66d1, type: 3}
@@ -120,4 +120,18 @@ AnimationClip:
   m_EulerEditorCurves: []
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
-  m_Events: []
+  m_Events:
+  - time: 0.5833333
+    functionName: PlayStepSound
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 1.25
+    functionName: PlayStepSound
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
