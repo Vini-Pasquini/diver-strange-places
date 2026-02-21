@@ -3,6 +3,14 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
+    private enum EnemyState { Patrol, Chase, }
+    private EnemyState _currentState;
+
+    [SerializeField] private Transform _fishSprite;
+    [SerializeField] private Transform _lookAtFinalRot;
+
+    private float _interpolationTime = 0f;
+
     private Rigidbody2D _rigidbody2D;
 
     private Vector3[] _waypoints;
@@ -13,9 +21,24 @@ public class EnemyController : MonoBehaviour
     private void Start()
     {
         this._rigidbody2D = this.GetComponent<Rigidbody2D>();
+        this._currentState = EnemyState.Patrol;
     }
 
     private void Update()
+    {
+        this._interpolationTime += Time.deltaTime * .1f;
+        if (this._interpolationTime >= 1f) this._interpolationTime = 1f;
+
+        switch (this._currentState)
+        {
+            case EnemyState.Patrol: this.PatrolUpdate(); break;
+            case EnemyState.Chase: this.ChaseUpdate(); break;
+        }
+
+        this._fishSprite.rotation = Quaternion.Lerp(this._fishSprite.rotation, this._lookAtFinalRot.rotation, this._interpolationTime);
+    }
+
+    private void PatrolUpdate()
     {
         if (GameManager.Instance.ActivePathNode == null) return;
 
@@ -37,26 +60,28 @@ public class EnemyController : MonoBehaviour
 
         this._rigidbody2D.linearVelocity = (this._waypoints[this._currentWaypointIndex] - this.transform.position).normalized * this._movementSpeed;
 
-        if ((this._waypoints[this._currentWaypointIndex] - this.transform.position).magnitude <= 0.1f)
+        if ((this._waypoints[this._currentWaypointIndex] - this.transform.position).magnitude <= 0.5f)
         {
             this._currentWaypointIndex++;
             if (this._currentWaypointIndex >= this._waypoints.Length) this._currentWaypointIndex = 0;
+            this._interpolationTime = 0f;
         }
+
+        this._lookAtFinalRot.LookAt(this._waypoints[this._currentWaypointIndex]);
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void ChaseUpdate()
     {
-        if (collision.CompareTag("Player"))
-        {
-            GameManager.Instance.insideFishSight = true;
-        }
+
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision) 
+    {
+        if (collision.CompareTag("Player")) { GameManager.Instance.fishNearby = true; }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
-        {
-            GameManager.Instance.insideFishSight = false;
-        }
+        if (collision.CompareTag("Player")) { GameManager.Instance.fishNearby = false; }
     }
 }

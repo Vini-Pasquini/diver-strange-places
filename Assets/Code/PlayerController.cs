@@ -47,6 +47,7 @@ public class PlayerController : MonoBehaviour
             this._skipStopBoostAnim = false;
             this._boostDamp.Start();
             this.PlayAnim(PlayerAnimation.StartBoost);
+            GameManager.Instance.BubbleNoise += .1f;
         }
         if (Input.GetKeyUp(KeyCode.W))
         {
@@ -73,6 +74,9 @@ public class PlayerController : MonoBehaviour
         if (isGroundedBuffer != this._isGrounded) { this._fallDamp.Start(); }
 
         this.UpdateAnimation();
+
+        if (GameManager.Instance.fishNearby && this._isBoosting) { GameManager.Instance.BubbleNoise += (Time.deltaTime / 3f) * (this._verticalVelocity / this._boostSpeed); }
+        else { GameManager.Instance.BubbleNoise -= Time.deltaTime / 6f; }
     }
 
     private void PlayAnim(PlayerAnimation playerAnimation)

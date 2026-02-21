@@ -5,11 +5,27 @@ public class GameManager : PersistentSingleton<GameManager>
 {
     [Header("For Testing Only")]
     [SerializeField] private RawImage playerVisibleIndicator;
-    [SerializeField] private RawImage insideFishSightIndicator;
+    [SerializeField] private RawImage nearbyFishIndicator;
+    [SerializeField] private RawImage bubbleNoiseIndicator;
 
     [Header("Actual GameManager Stuff")]
+    private float _bubbleNoise = 0f;
+    
     public bool playerVisible = false;
-    public bool insideFishSight = false;
+    public bool fishNearby = false;
+    
+    public float BubbleNoise
+    {
+        get { return this._bubbleNoise; }
+
+        set
+        {
+            if (value >= 1f) { this._bubbleNoise = 1f; return; }
+            if (value <= 0f) { this._bubbleNoise = 0f; return; }
+
+            this._bubbleNoise = value;
+        }
+    }
 
     private HUDController _hudController;
 
@@ -26,9 +42,12 @@ public class GameManager : PersistentSingleton<GameManager>
     private void Update()
     {
         playerVisibleIndicator.color = !playerVisible ? Color.red : Color.green;
-        insideFishSightIndicator.color = !insideFishSight ? Color.red : Color.green;
+        nearbyFishIndicator.color = !fishNearby ? Color.red : Color.green;
 
-        if (playerVisible && insideFishSight) Debug.Log("Dead");
+        bubbleNoiseIndicator.color = Color.Lerp(Color.green, Color.red, this._bubbleNoise);
+        bubbleNoiseIndicator.transform.localScale = new Vector3(this._bubbleNoise, 1f, 1f);
+
+        if ((playerVisible && fishNearby) || this._bubbleNoise >= 1f) Debug.Log("Dead");
     }
 
     public void SetMessageDisplayActive(bool enable, string msg = "")
