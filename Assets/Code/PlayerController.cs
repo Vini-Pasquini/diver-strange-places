@@ -58,7 +58,7 @@ public class PlayerController : MonoBehaviour
         bool isGroundedBuffer = this._isGrounded;
 
         this._rigidbody.linearVelocity = new Vector2(this._horizontalVelocity, this._verticalVelocity);
-        RaycastHit2D hit = Physics2D.Raycast(this.transform.position, Vector2.down, .55f, 1 << 31);
+        RaycastHit2D hit = Physics2D.Raycast(this.transform.position, Vector2.down, .8f, 1 << 31);
         this._isGrounded = hit.collider;
 
         if (isGroundedBuffer != this._isGrounded) { this._fallDamp.Start(); }
@@ -109,7 +109,7 @@ public class PlayerController : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(this.transform.position, this.transform.position - (this.transform.up * .55f));
+        Gizmos.DrawLine(this.transform.position, this.transform.position - (this.transform.up * .8f));
     }
 #endif
 }

@@ -47,7 +47,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TooltipTrigger
   _message: 
-  _setDisplayActive: 0
+  _automaticFadeOut: 0
+  _fadeDelay: 2
+  _disableMode: 0
 --- !u!212 &1083903602554369146
 SpriteRenderer:
   serializedVersion: 2

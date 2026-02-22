@@ -31,6 +31,8 @@ public class HUDController : MonoBehaviour
             if (this._tooltipFadeIn) { this._tooltipText.alpha = (this._tooltipFadeTimer.Delay - this._tooltipFadeTimer.RemainingSeconds) / this._tooltipFadeTimer.Delay; }
             else { this._tooltipText.alpha = this._tooltipFadeTimer.RemainingSeconds / this._tooltipFadeTimer.Delay; }
         }
+
+        if (!this._tooltipFadeIn && !this._tooltipFadeTimer.Running) { this._tooltipText.alpha = 0f; }
     }
 
     public void EnableTooltip(string newText)

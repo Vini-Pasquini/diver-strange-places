@@ -44,3 +44,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3364e2a37db081547823423285b99657, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  _winSound: {fileID: 8187130432167460862, guid: a16d1557a23f02447a33b3516cee7b72, type: 3}
+  _lossSound: {fileID: 301545982218648187, guid: 9374698e17be4f440b5ac31aaf61df3d, type: 3}
+  playerVisible: 0
+  fishNearby: 0
+  currentEnemyState: 0
+  soundOrigin: {x: 0, y: 0, z: 0}
+  justChangedPath: 0

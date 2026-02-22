@@ -22,6 +22,9 @@ public enum GameScene
 
 public class GameManager : PersistentSingleton<GameManager>
 {
+    [SerializeField] private GameObject _winSound;
+    [SerializeField] private GameObject _lossSound;
+
     private GameState _currentGameState = GameState.None;
     public GameState CurrentGameState { get { return this._currentGameState; } }
 
@@ -83,7 +86,6 @@ public class GameManager : PersistentSingleton<GameManager>
 
     private void Update()
     {
-        //this.airPressureIndicator.transform.localScale = new Vector3(this._airPressure, 1f, 1f);
         if ((this.playerVisible && this.fishNearby)) { this.currentEnemyState = EnemyState.Kill; }
     }
 
@@ -93,6 +95,10 @@ public class GameManager : PersistentSingleton<GameManager>
         switch (Enum.Parse(typeof(GameScene), sceneName))
         {
             case GameScene.Menu:
+                GameObject ws = GameObject.Find("WinSound(Clone)");
+                if (ws != null) Destroy(ws);
+                GameObject ls = GameObject.Find("LossSound(Clone)");
+                if (ls != null) Destroy(ls);
                 this._currentGameState = GameState.None;
                 break;
             case GameScene.Gameplay:
@@ -132,6 +138,11 @@ public class GameManager : PersistentSingleton<GameManager>
     }
 
     // Fish AI
+    public void ActivateFishAI()
+    {
+        this.currentEnemyState = EnemyState.Patrol;
+    }
+
     public void RegisterActivePathNode(PathNode activePathNode)
     {
         if (activePathNode == this._activePathNode) return;
@@ -141,6 +152,7 @@ public class GameManager : PersistentSingleton<GameManager>
 
     public void AlertFish(Vector3 targetPosition)
     {
+        if (this.currentEnemyState == EnemyState.None) return;
         this.justChangedPath = true;
         this.soundOrigin = targetPosition;
         this.currentEnemyState = EnemyState.Chase;
@@ -149,6 +161,8 @@ public class GameManager : PersistentSingleton<GameManager>
     public void GameOver(bool victory)
     {
         this._currentGameState = victory ? GameState.GameOver_Win : GameState.GameOver_Loss;
+        GameObject gameoverSound = GameObject.Instantiate(victory ? this._winSound : this._lossSound);
+        GameObject.DontDestroyOnLoad(gameoverSound);
         this.ChangeScene("GameOver");
     }
 }

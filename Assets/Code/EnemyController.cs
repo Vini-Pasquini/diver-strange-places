@@ -17,7 +17,7 @@ public class EnemyController : MonoBehaviour
     private int _currentWaypointIndex;
 
     private float _patrolSpeed = 2f;
-    private float _chaseSpeed = 4f;
+    private float _chaseSpeed = 3f;
 
     private Timer _investigationTimer = new(5f, false);
 
@@ -29,7 +29,7 @@ public class EnemyController : MonoBehaviour
         this._audioSource = this.GetComponent<AudioSource>();
         this._player = GameObject.Find("Player");
 
-        GameManager.Instance.currentEnemyState = EnemyState.Patrol;
+        GameManager.Instance.currentEnemyState = EnemyState.None;
     }
 
     private void Update()
@@ -43,6 +43,7 @@ public class EnemyController : MonoBehaviour
             case EnemyState.Chase: this.ChaseUpdate(); break;
             case EnemyState.Investigate: this.InvestigateUpdate(); break;
             case EnemyState.Kill: this.KillUpdate(); break;
+            default: break;
         }
 
         this._fishSprite.rotation = Quaternion.Lerp(this._fishSprite.rotation, this._lookAtFinalRot.rotation, this._interpolationTime);
@@ -73,7 +74,7 @@ public class EnemyController : MonoBehaviour
 
         this._rigidbody2D.linearVelocity = (this._waypoints[this._currentWaypointIndex] - this.transform.position).normalized * this._patrolSpeed;
 
-        if ((this._waypoints[this._currentWaypointIndex] - this.transform.position).magnitude <= 0.5f)
+        if ((this._waypoints[this._currentWaypointIndex] - this.transform.position).magnitude <= 0.1f)
         {
             this._currentWaypointIndex++;
             if (this._currentWaypointIndex >= this._waypoints.Length) this._currentWaypointIndex = 0;
