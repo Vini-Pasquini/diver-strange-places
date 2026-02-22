@@ -45,4 +45,9 @@ public class HUDController : MonoBehaviour
         this._tooltipFadeIn = false;
         this._tooltipFadeTimer.Start();
     }
+
+    public void OnChangeSceneButtonPress(string sceneName)
+    {
+        GameManager.Instance.ChangeScene(sceneName);
+    }
 }

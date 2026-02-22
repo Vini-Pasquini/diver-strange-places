@@ -112,7 +112,7 @@ public class EnemyController : MonoBehaviour
 
     private void KillUpdate()
     {
-        GameManager.Instance.GameOver();
+        GameManager.Instance.GameOver(false);
     }
 
     private void OnTriggerEnter2D(Collider2D collision) 
