@@ -17,7 +17,7 @@ public class GameOverSceneLoad : MonoBehaviour
         GameState state = GameManager.Instance.CurrentGameState;
         this._winScreen.SetActive(state == GameState.GameOver_Win);
         this._lossScreen.SetActive(state == GameState.GameOver_Loss);
-        GameManager.Instance.SetMessageDisplayActive(true, state == GameState.GameOver_Win ? "I've Brought You a Friend!" : "Should've been more Careful...");
+        GameManager.Instance.SetMessageDisplayActive(true, state == GameState.GameOver_Win ? "You'll finally have some company." : "Should've been more careful...");
         this._zoomTimer.Start();
     }
 
@@ -37,8 +37,6 @@ public class GameOverSceneLoad : MonoBehaviour
                 this._buttonWin.SetActive(false);
                 this._buttonLoss.SetActive(true);
             }
-
-            GameManager.Instance.SetMessageDisplayActive(false);
         }
     }
 }

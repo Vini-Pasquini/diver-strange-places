@@ -21,6 +21,12 @@ public class HUDController : MonoBehaviour
 
     private void Update()
     {
+        if (GameManager.Instance.CurrentGameState == GameState.None)
+        {
+            _tooltipText.alpha = 1f;
+            return;
+        }
+
         if (this._tooltipAnimTimer.UpdateTimer())
         {
             this._tooltipText.rectTransform.anchoredPosition = this._tooltipAnchoredPosition + new Vector2(Random.Range(0f, 7f), Random.Range(0f, 7f));
@@ -51,5 +57,10 @@ public class HUDController : MonoBehaviour
     public void OnChangeSceneButtonPress(string sceneName)
     {
         GameManager.Instance.ChangeScene(sceneName);
+    }
+
+    public void OnQuitButtonPress()
+    {
+        Application.Quit();
     }
 }
